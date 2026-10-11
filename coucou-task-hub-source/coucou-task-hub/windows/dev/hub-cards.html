@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coucou cards preview</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      // In-memory visual fixture: no real playback or saved activities are changed.
+      import "/src/style.css";
+      import { Island } from "/src/island/island.ts";
+      import { Hub } from "/src/core/hub.ts";
+      import { State } from "/src/core/state.ts";
+      const playing = new URLSearchParams(location.search).get("playing") === "1";
+
+      Hub.updateMedia({ currentId: "preview", sessions: [{
+        id: "preview", app: "Music", title: "A quiet moment", artist: "Preview music",
+        artwork: null, playing, position: 42, duration: 180, sampledAt: Date.now(),
+        canPlay: true, canPause: true, canNext: true, canPrevious: true, canSeek: true,
+      }] });
+      const timer = Hub.startTimer(25, "Focus timer");
+      Hub.pauseTimer(timer.id);
+      Hub.select("media:preview");
+      const island = new Island(document.getElementById("root"));
+      Hub.subscribe(() => State.notify());
+      island.fsm.keepCompact = true;
+      island.fsm.pinned = true;
+      island.setView("hub");
+    </script>
+  </body>
+</html>

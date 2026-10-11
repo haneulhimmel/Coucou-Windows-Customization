@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Task Hub — silent media test</title>
+<style>body{font:16px system-ui;background:#17191f;color:#e8edf5;padding:40px}button{font:inherit;padding:12px 20px;margin-right:10px}p{color:#9faabb}</style>
+<h1>Silent media test</h1><p>A silent local audio source for verifying Windows media sessions. No account or network audio.</p>
+<button id="play">Play silent sample</button><button id="pause">Pause sample</button><p id="status">Stopped</p>
+<script>
+// 120 seconds of 8 kHz mono PCM silence, generated locally.
+const length = 8000 * 120, buffer = new ArrayBuffer(44 + length), view = new DataView(buffer);
+const text = (offset, value) => [...value].forEach((c,i) => view.setUint8(offset+i,c.charCodeAt(0)));
+text(0,'RIFF'); view.setUint32(4,36+length,true); text(8,'WAVE'); text(12,'fmt ');
+view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
+view.setUint32(24,8000,true); view.setUint32(28,8000,true); view.setUint16(32,1,true); view.setUint16(34,8,true);
+text(36,'data'); view.setUint32(40,length,true); new Uint8Array(buffer,44).fill(128);
+const audio = new Audio(URL.createObjectURL(new Blob([buffer], {type:'audio/wav'})));
+const status = document.getElementById('status');
+document.getElementById('play').onclick = () => audio.play();
+document.getElementById('pause').onclick = () => audio.pause();
+audio.onplay = () => { status.textContent='Playing silent sample'; navigator.mediaSession.playbackState='playing'; };
+audio.onpause = () => { status.textContent='Paused'; navigator.mediaSession.playbackState='paused'; };
+navigator.mediaSession.metadata = new MediaMetadata({title:'A quiet moment',artist:'Task Hub test',album:'Local test audio'});
+navigator.mediaSession.setActionHandler('play',()=>audio.play());
+navigator.mediaSession.setActionHandler('pause',()=>audio.pause());
+navigator.mediaSession.setActionHandler('seekto',e=>{audio.currentTime=e.seekTime;});
+audio.ontimeupdate = () => { if (Number.isFinite(audio.duration)) navigator.mediaSession.setPositionState({duration:audio.duration,playbackRate:1,position:audio.currentTime}); };
+</script></html>
