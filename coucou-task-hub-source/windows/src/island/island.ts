@@ -23,6 +23,7 @@ import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
 import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
 import { h } from "../views/dom";
+import { CompactPlayback } from "../views/compact-playback";
 import { IslandStateMachine } from "./fsm";
 import { refreshHookPills } from "./integrations";
 import { DesktopLink } from "./desktop";
@@ -62,6 +63,7 @@ export class Island {
   private miniGrid!: HTMLElement;
   private countdown!: HTMLElement;
   private wakeStrip!: HTMLElement;
+  private compactPlayback: CompactPlayback | null = null;
 
   private header!: ViewHost;
   private views!: Map<IslandViewName, ViewHost>;
@@ -1220,6 +1222,12 @@ export class Island {
     if (State.mode !== "compact") return;
     const timer = Hub.timers.find(t => `timer:${t.id}` === Hub.focusId);
     const media = Hub.focusId.startsWith("media:") ? Hub.selectedMedia : null;
+    if (media && !State.pendingApproval) {
+      if (!this.compactPlayback) this.compactPlayback = new CompactPlayback();
+      this.compactPlayback.sync(media);
+      if (label.firstElementChild !== this.compactPlayback.el) label.replaceChildren(this.compactPlayback.el);
+      return;
+    }
     const title = State.pendingApproval ? "Needs your attention" : timer ? timer.label : media ? media.title || media.app : "Your day, within reach";
     const status = State.pendingApproval ? "●" : timer ? timer.status === "finished" ? t("Done") : clock(timerRemaining(timer)) : media ? media.playing ? "♫" : "Ⅱ" : "↗";
     const runningTimer = Hub.timers.find(t => t.status === "running");

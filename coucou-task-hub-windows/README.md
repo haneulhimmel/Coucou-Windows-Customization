@@ -9,8 +9,9 @@ For a normal installation, close any running Coucou Task Hub and run **Coucou Ta
 The portable option is also available: run **Coucou Task Hub.exe** from the portable Windows folder and keep its accompanying **coucou-hook.exe** beside it. The portable app requires WebView2 to be present already.
 
 - Click the compact island at the top of your screen to expand it. Click outside the expanded island, including on the desktop or another app, to fold it back to compact. Escape also folds it.
-- Music, timers, shortcuts and connected activities each use their own rounded, bordered space, following Coucou's original card style.
+- Music, timers, shortcuts and connected activities each use their own rounded, bordered space, following Coucou's original card style. Playback uses Spotify green, timers use amber (green when completed), and shortcuts use teal, with matching borders and hover accents.
 - Play audio in Spotify, Apple Music, a browser, or another player that exposes a Windows media session. Its activity appears automatically.
+- The compact music island shows a shortened title with previous, play/pause and next buttons in the original Coucou theme. Playback buttons keep it compact; clicking its title or Mochi opens the full hub. A paused player remains available for resuming, and unsupported buttons are disabled.
 - Select a player in the activity list. Play/pause, previous/next and seek are enabled only when that player reports support. Coucou controls existing playback; it does not stream audio itself or require a Spotify login.
 - Start a 5-, 15-, or 25-minute timer, or choose **Custom timer** for a name and a duration from 1 to 1440 minutes. Up to eight timers can coexist.
 - Pause, resume, or cancel a timer. **Done** acknowledges a completed timer.

@@ -1,13 +1,12 @@
-Coucou Task Hub 0.3.1 — Windows
+Coucou Task Hub — current Windows build
 
-This folder contains both the source code and the portable Windows app.
+coucou-task-hub-source/
+  Editable source code, directly in this folder. Build instructions: TASK-HUB.md.
 
-coucou-task-hub-source.zip
-  Extract to review or modify the source code. Build instructions are in TASK-HUB.md.
+coucou-task-hub-windows/
+  Run Coucou Task Hub Setup.exe to install the app.
+  For portable use, run Coucou Task Hub.exe and keep coucou-hook.exe beside it.
 
-coucou-task-hub-windows.zip
-  Extract the entire archive, then open Coucou Task Hub.exe.
-  Keep coucou-hook.exe beside the app; it is a supporting component.
-  This is the portable app package, not an installer.
-
-The Windows app does not run natively on Linux.
+These two folders are the maintained copies. Future changes update them in place.
+The checkout folder name is retained to preserve your existing GitHub checkout path.
+The current application version is recorded in the source package.json and installer.

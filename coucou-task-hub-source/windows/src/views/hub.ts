@@ -17,7 +17,7 @@ export function buildHub(actions: ViewActions): ViewHost {
   const pin = button("Pin activity", () => Hub.togglePin(), "hub-pin");
   const detail = h("div", { class: "hub-detail" });
   const list = h("div", { class: "hub-activity-list", role: "group", "aria-label": "Activities" });
-  const footer = h("div", { class: "hub-footer" });
+  const footer = h("div", { class: "hub-footer", "data-kind": "timer" });
   const error = h("div", { class: "hub-error", role: "status", "aria-live": "polite" });
   const el = h("div", { class: "view hub-view" },
     h("div", { class: "hub-heading" }, h("div", {}, title, subtitle), pin),
@@ -142,6 +142,9 @@ export function buildHub(actions: ViewActions): ViewHost {
     pin.textContent = Hub.pinnedId ? "● Pinned" : "Pin activity";
     pin.setAttribute("aria-pressed", String(!!Hub.pinnedId));
     // Keep editor inputs and playback sliders mounted across timer / media events.
+    const focusedTimer = Hub.timers.find(t => `timer:${t.id}` === Hub.focusId);
+    detail.dataset.kind = editMode === "shortcut" ? "shortcuts" : editMode ?? activity?.kind ?? "shortcuts";
+    detail.dataset.status = editMode ? "" : focusedTimer?.status ?? "";
     renderDetail();
     const activities = Hub.activities();
     const nextListKey = `${activities.map(a => a.id).join("|")}:${State.tasks.length > 0}`;
@@ -151,18 +154,23 @@ export function buildHub(actions: ViewActions): ViewHost {
         const title = h("span", { class: "hub-activity-title" });
         const subtitle = h("span", { class: "hub-activity-sub" });
         const dot = h("i", { class: "hub-live-dot" });
-        const el = h("button", { class: "hub-activity", onclick: () => { editMode = null; Hub.select(a.id); } },
+        const el = h("button", { class: "hub-activity", "data-kind": a.kind, onclick: () => { editMode = null; Hub.select(a.id); } },
           h("span", { class: `hub-activity-icon ${a.kind}`, text: symbol(a.kind) }),
           h("span", { class: "hub-activity-copy" }, title, subtitle), dot);
         activityNodes.set(a.id, { el, title, subtitle, dot }); list.append(el);
       }
-      if (State.tasks.length) list.append(button("AI & connected services ↗", () => actions.setView("overview"), "hub-agent-link"));
+      if (State.tasks.length) {
+        const agentLink = button("AI & connected services ↗", () => actions.setView("overview"), "hub-agent-link");
+        agentLink.dataset.kind = "agent";
+        list.append(agentLink);
+      }
     }
     for (const a of activities) {
       const row = activityNodes.get(a.id)!;
       row.el.classList.toggle("selected", a.id === activity?.id);
       row.el.setAttribute("aria-pressed", String(a.id === activity?.id));
       row.el.setAttribute("aria-label", `${a.title}, ${a.subtitle}`);
+      row.el.dataset.status = a.kind === "timer" ? Hub.timers.find(t => `timer:${t.id}` === a.id)?.status ?? "" : "";
       row.title.textContent = a.title; row.subtitle.textContent = a.subtitle;
       row.dot.style.visibility = a.active ? "visible" : "hidden";
     }

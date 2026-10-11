@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Compact playback preview</title></head>
+<body><div id="root"></div>
+<script type="module">
+import "/src/style.css";
+import { Island } from "/src/island/island.ts";
+import { Hub } from "/src/core/hub.ts";
+import { State } from "/src/core/state.ts";
+import { Bridge } from "/src/core/bridge.ts";
+// Isolated in-memory preview. No native commands or saved activities are used.
+const media = { id: "preview", app: "Music", title: "A quiet moment — a long video title that should truncate", artist: "Preview music",
+  artwork: null, playing: true, position: 42, duration: 180, sampledAt: Date.now(),
+  canPlay: true, canPause: true, canNext: true, canPrevious: false, canSeek: true };
+const snapshot = () => ({ currentId: media.id, sessions: [{ ...media }] });
+Bridge.mediaControl = async (id, action) => {
+  document.getElementById("root").dataset.lastCommand = `${id}:${action}`;
+  if (action === "pause") media.playing = false;
+  if (action === "play") media.playing = true;
+  if (action === "next") media.title = "Next track";
+  return true;
+};
+Bridge.mediaRefresh = async () => snapshot();
+Hub.updateMedia(snapshot());
+Hub.select("media:preview");
+const island = new Island(document.getElementById("root"));
+Hub.subscribe(() => State.notify());
+island.fsm.keepCompact = true;
+island.setView("hub");
+island.outsideClick();
+</script></body></html>

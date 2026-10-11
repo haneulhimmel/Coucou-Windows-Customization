@@ -122,7 +122,7 @@ export class ActivityHub {
   }
   select(id: string) { this.error = ""; this.selectedId = id; if (this.pinnedId) this.pinnedId = id; this.save(); this.notify(); }
   togglePin() { this.pinnedId = this.pinnedId ? null : this.focusId; this.save(); this.notify(); }
-  get hasLiveActivity() { return this.timers.length > 0 || this.media.sessions.some(s => s.playing); }
+  get hasLiveActivity() { return this.timers.length > 0 || this.media.sessions.length > 0; }
   get musicPlaying() { return this.media.sessions.some(s => s.playing); }
   startTimer(minutes: number, label = "Focus timer", now = Date.now()): HubTimer | null {
     if (!Number.isFinite(minutes) || minutes < 1 / 60 || minutes > 1440 || this.timers.length >= 8) return null;
